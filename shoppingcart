@@ -11,7 +11,7 @@
 				<td colspan="6">购物清单</td>
 			</tr>
 			<tr>
-				<td><input type="checkbox"></td>
+				<td><input type="checkbox" v-bind:checked="isAll" v-on:click="checkAll"></td>
 				<td>商品</td>
 				<td>数量</td>
 				<td>单价（元）</td>
@@ -19,14 +19,14 @@
 				<td>操作</td>
 			</tr>
 			<tr v-for="(item,index) in shopdata">
-				<td><input type="checkbox"></td>
+				<td><input type="checkbox" v-bind:checked="checkVal.indexOf(item.dataid) > -1" v-on:click="checkOne(index)"></td>
 				<td>
 					<div class="left">
 						<img v-bind:src="item.imgurl">
 					</div>
 					<div class="right">
 						<div class="text">{{item.shopname}}</div>
-						<div class="text">款号:{{item.id}}</div>
+						<div class="text">款号:{{item.shopid}}</div>
 						<div class="text">颜色:{{item.classify}}</div>
 					</div>
 				</td>
@@ -37,11 +37,11 @@
 				</td>
 				<td>{{item.price}}</td>
 				<td>{{item.price * item.num}}</td>
-				<td><a href="javascript:;">删除</a></td>
+				<td><a href="javascript:;" v-on:click="del(index)">删除</a></td>
 			</tr>
 			<tr>
 				<td colspan="2" class="delshop">
-					<a href="javascript:;">删除所有的商品</a>
+					<a href="javascript:;" v-on:click="delsomething()">删除所选的商品</a>
 				</td>
 				<td colspan="4" class="settlement">
 					<span>总价值为：{{totalprice}}</span>
@@ -62,50 +62,113 @@ new Vue({
 			{
 				shopname:'COACH X KEITH HARING系列大手袋 ',
 				price:3950,
-				id:28643,//款号
+				shopid:28643,//款号
 				num:1,
 				classify:'黑灰色硬件/黑色/黑色',
-				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$',
+				dataid:1
 			},
 			{
 				shopname:'COACH X KEITH HARING系列大手袋 ',
 				price:3950,
-				id:28643,//款号
+				shopid:28643,//款号
 				num:1,
 				classify:'黑灰色硬件/黑色/黑色',
-				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$',
+				dataid:2
 			},
 			{
 				shopname:'COACH X KEITH HARING系列大手袋 ',
 				price:3950,
-				id:28643,//款号
+				shopid:28643,//款号
 				num:1,
 				classify:'黑灰色硬件/黑色/黑色',
-				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$',
+				dataid:3
 			},
 			{
 				shopname:'COACH X KEITH HARING系列大手袋 ',
 				price:3950,
-				id:28643,//款号
+				shopid:28643,//款号
 				num:1,
 				classify:'黑灰色硬件/黑色/黑色',
-				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$',
+				dataid:4
 			}
 		],
-		totalprice:0
+		totalprice:0,
+		isAll:false,
+		checkVal:[]
 	},
 	methods:{
 		del:function(index){
-			this.testdata.splice(index,1)
+			this.shopdata.splice(index,1)
+		},
+		delsomething:function(){
+			var shop = this.shopdata
+			for(var i =0;i<shop.length;i++)
+			{
+				if(this.checkVal.indexOf(shop[i].dataid) > -1)
+				{
+					this.shopdata.splice(i,1)
+				}
+			}
 		},
 		addNum : function(index){
-			this.shopdata[index].num++;
+			var shop = this.shopdata[index];
+			shop.num++;
+			if(this.checkVal.indexOf(shop.dataid) > -1)
+			{
+				this.totalprice = this.totalprice + this.shopdata[index].price
+			}
 		},
 		reduceNum:function(index){
 			if(this.shopdata[index].num > 1)
 			{
 				this.shopdata[index].num--;
+				if(this.checkVal.indexOf(shop.dataid) > -1)
+				{
+					this.totalprice = this.totalprice - this.shopdata[index].price
+				}
 			}
+		},
+		checkAll:function(){
+			if(this.isAll)//已经选中
+			{
+				this.isAll = false;
+				this.totalprice = 0;
+				this.checkVal = [];
+			}
+			else
+			{
+				this.isAll = true;
+				var arr = this.shopdata;
+				for(var i=0;i<arr.length;i++)
+				{
+					this.totalprice = this.totalprice + arr[i].num*arr[i].price;
+					this.checkVal.push(arr[i].dataid);
+				}
+			}
+		},
+		checkOne:function(index){
+			var shop = this.shopdata[index];
+			var ischeck = this.checkVal.indexOf(shop.dataid);
+			if(ischeck > -1)//已经存在在里面
+			{
+				this.checkVal.splice(ischeck,1);
+				this.totalprice = this.totalprice - shop.num*shop.price;
+				this.isAll = false;
+			}
+			else
+			{
+				this.checkVal.push(shop.dataid);
+				this.totalprice = this.totalprice + shop.num*shop.price;
+				if(this.checkVal.length == this.shopdata.length)
+				{
+					this.isAll = true;
+				}
+			}
+			
 		}
 	}
 })

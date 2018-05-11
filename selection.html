@@ -1,0 +1,48 @@
+<!-- 单选多选的小例子 -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="https://vuejs.org/js/vue.js"></script>
+</head>
+<body>
+	<div id="app">
+		<input type="checkbox" name="test" v-bind:checked="isAll" v-on:click="allCheck()">全选
+		<label  v-for="(item,key,index) in list">
+			<input type="checkbox" name="test" v-bind:checked="item.ischeck"  v-on:click="item.ischeck = !item.ischeck">{{item.name}}
+		</label>
+	</div>
+</body>
+</html>
+
+<script type="text/javascript">
+new Vue({
+	el:'#app',
+	data:{
+		list:[
+			{name:'第一个',value:1,ischeck:true},
+			{name:'第二个',value:2,ischeck:false},
+			{name:'第三个',value:3,ischeck:false},
+			{name:'第四个',value:4,ischeck:false},
+			{name:'第五个',value:5,ischeck:true}
+		]
+		
+	},
+	computed:{
+		isAll : function(){
+			return this.list.every(function(val){
+				return val.ischeck
+			})
+		}
+	},
+	methods:{
+		allCheck:function(){
+			var isAll = this.isAll;
+			this.list.forEach(function(val){
+				val.ischeck = !isAll;
+			})
+		}
+	}
+})
+</script>
+

@@ -12,7 +12,7 @@
 				<td colspan="6">购物清单</td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" v-bind:checked="isAll" v-on:click="checkAll"></td>
+				<td><input type="checkbox" v-bind:checked="isAll" v-on:click="isCheck(isAll)"></td>
 				<td>商品</td>
 				<td>数量</td>
 				<td>单价（元）</td>
@@ -20,7 +20,7 @@
 				<td>操作</td>
 			</tr>
 			<tr v-for="(item,index) in shopdata">
-				<td><input type="checkbox" v-bind:checked="checkVal.indexOf(item.dataid) > -1" v-on:click="checkOne(index)"></td>
+				<td><input type="checkbox" v-bind:checked="item.checked" v-on:click="item.checked = !item.checked"></td>
 				<td>
 					<div class="left">
 						<img v-bind:src="item.imgurl">
@@ -32,20 +32,20 @@
 					</div>
 				</td>
 				<td class="numbtn">
-					<a href="javascript:;" class="btn reduce" v-on:click="reduceNum(index)">-</a>
+					<a href="javascript:;" class="btn reduce" v-on:click="reduceShopNum(index)">-</a>
 					<span class="numshow">{{item.num}}</span>
-					<a href="javascript:;" class="btn add" v-on:click="addNum(index)">+</a>
+					<a href="javascript:;" class="btn add" v-on:click="addShopNum(index)">+</a>
 				</td>
 				<td>{{item.price}}</td>
 				<td>{{item.price * item.num}}</td>
-				<td><a href="javascript:;" v-on:click="del(index)">删除</a></td>
+				<td><a href="javascript:;" v-on:click="delshop(index)">删除</a></td>
 			</tr>
 			<tr>
 				<td colspan="2" class="delshop">
-					<a href="javascript:;" v-on:click="delsomething()">删除所选的商品</a>
+					<a href="javascript:;" v-on:click="delshop('all')">删除所选的商品</a>
 				</td>
 				<td colspan="4" class="settlement">
-					<span>总价值为：{{totalprice}}</span>
+					<span>总价值为：{{allPrice}}</span>
 					<a href="javascript:;" class="gobuy">去结算</a>
 				</td>
 			</tr>
@@ -96,81 +96,62 @@ new Vue({
 				imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$',
 				dataid:4
 			}
-		],
-		totalprice:0,
-		isAll:false,
-		checkVal:[]
+		]
+	},
+	mounted:function(){
+		var _this = this;
+		this.shopdata.forEach(function(val){
+			_this.$set(val,'checked',true);
+		})
+	},
+	computed:{
+		isAll : function(){
+			return this.shopdata.every(function(val){
+				return val.checked;
+			})
+		},
+		allPrice:function(){
+			var totalprice = 0;
+			var shop = this.shopdata;
+			for(var i=0;i<shop.length;i++){
+				if(shop[i].checked)
+				{
+					totalprice += shop[i].num * shop[i].price;
+				}
+			}
+			return totalprice;
+		}
 	},
 	methods:{
-		del:function(index){
-			this.shopdata.splice(index,1)
-		},
-		delsomething:function(){
-			var shop = this.shopdata
-			for(var i =0;i<shop.length;i++)
+		isCheck : function(isAll){
+			var shop = this.shopdata;
+			console.log(shop);
+			for(var i=0;i<shop.length;i++)
 			{
-				if(this.checkVal.indexOf(shop[i].dataid) > -1)
-				{
-					this.shopdata.splice(i,1)
-				}
+				shop[i].checked = !isAll;
 			}
 		},
-		addNum : function(index){
-			var shop = this.shopdata[index];
-			shop.num++;
-			if(this.checkVal.indexOf(shop.dataid) > -1)
-			{
-				this.totalprice = this.totalprice + this.shopdata[index].price
-			}
+		addShopNum : function(index){
+			this.shopdata[index].num = this.shopdata[index].num + 1;
 		},
-		reduceNum:function(index){
+		reduceShopNum : function(index){
 			if(this.shopdata[index].num > 1)
 			{
-				this.shopdata[index].num--;
-				if(this.checkVal.indexOf(shop.dataid) > -1)
-				{
-					this.totalprice = this.totalprice - this.shopdata[index].price
-				}
+				this.shopdata[index].num = this.shopdata[index].num - 1;
 			}
 		},
-		checkAll:function(){
-			if(this.isAll)//已经选中
+		delshop : function(index){
+			if(index == 'all')
 			{
-				this.isAll = false;
-				this.totalprice = 0;
-				this.checkVal = [];
+				this.shopdata = this.shopdata.filter(function(val){
+					return !val.checked;
+				})
 			}
-			else
-			{
-				this.isAll = true;
-				var arr = this.shopdata;
-				for(var i=0;i<arr.length;i++)
-				{
-					this.totalprice = this.totalprice + arr[i].num*arr[i].price;
-					this.checkVal.push(arr[i].dataid);
-				}
+			else{
+				this.shopdata.splice(index,1);
 			}
-		},
-		checkOne:function(index){
-			var shop = this.shopdata[index];
-			var ischeck = this.checkVal.indexOf(shop.dataid);
-			if(ischeck > -1)//已经存在在里面
-			{
-				this.checkVal.splice(ischeck,1);
-				this.totalprice = this.totalprice - shop.num*shop.price;
-				this.isAll = false;
-			}
-			else
-			{
-				this.checkVal.push(shop.dataid);
-				this.totalprice = this.totalprice + shop.num*shop.price;
-				if(this.checkVal.length == this.shopdata.length)
-				{
-					this.isAll = true;
-				}
-			}
-			
 		}
+		
 	}
 })
 </script>

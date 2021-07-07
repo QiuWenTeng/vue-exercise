@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script type="text/javascript" src="https://vuejs.org/js/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <table class="shopcar" cellspacing="0">
+      <tr>
+        <td colspan="6">购物清单</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>商品</td>
+        <td>数量</td>
+        <td>单价（元）</td>
+        <td>金额（元）</td>
+        <td>操作</td>
+      </tr>
+      <tr v-for="(item,index) in shopdata">
+        <td><input type="checkbox"></td>
+        <td>
+          <div class="left">
+            <img v-bind:src="item.imgurl">
+          </div>
+          <div class="right">
+            <div class="text">{{item.shopname}}</div>
+            <div class="text">款号:{{item.id}}</div>
+            <div class="text">颜色:{{item.classify}}</div>
+          </div>
+        </td>
+        <td class="numbtn">
+          <a href="javascript:;" class="btn reduce" v-on:click="reduceNum(index)">-</a>
+          <span class="numshow">{{item.num}}</span>
+          <a href="javascript:;" class="btn add" v-on:click="addNum(index)">+</a>
+        </td>
+        <td>{{item.price}}</td>
+        <td>{{item.price * item.num}}</td>
+        <td><a href="javascript:;">删除</a></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="delshop">
+          <a href="javascript:;">删除所有的商品</a>
+        </td>
+        <td colspan="4" class="settlement">
+          <span>总价值为：{{totalprice}}</span>
+          <a href="javascript:;" class="gobuy">去结算</a>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+</body>
+</html>
+
+<script type="text/javascript">
+new Vue({
+  el:'#app',
+  data:{
+    shopdata:[
+      {
+        shopname:'COACH X KEITH HARING系列大手袋 ',
+        price:3950,
+        id:28643,//款号
+        num:1,
+        classify:'黑灰色硬件/黑色/黑色',
+        imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+      },
+      {
+        shopname:'COACH X KEITH HARING系列大手袋 ',
+        price:3950,
+        id:28643,//款号
+        num:1,
+        classify:'黑灰色硬件/黑色/黑色',
+        imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+      },
+      {
+        shopname:'COACH X KEITH HARING系列大手袋 ',
+        price:3950,
+        id:28643,//款号
+        num:1,
+        classify:'黑灰色硬件/黑色/黑色',
+        imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+      },
+      {
+        shopname:'COACH X KEITH HARING系列大手袋 ',
+        price:3950,
+        id:28643,//款号
+        num:1,
+        classify:'黑灰色硬件/黑色/黑色',
+        imgurl:'https://coach.scene7.com/is/image/Coach/28643_bpa45_a0?$pd_main$'
+      }
+    ],
+    totalprice:0
+  },
+  methods:{
+    del:function(index){
+      this.testdata.splice(index,1)
+    },
+    addNum : function(index){
+      this.shopdata[index].num++;
+    },
+    reduceNum:function(index){
+      if(this.shopdata[index].num > 1)
+      {
+        this.shopdata[index].num--;
+      }
+    }
+  }
+})
+</script>
+
+<style>
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  .shopcar {
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    width: 1000px;
+  }
+
+  .shopcar td {
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    vertical-align:middle;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .shopcar td .left,
+  .shopcar td .right {
+    float: left;
+    text-align: left;
+  }
+
+  .shopcar td .right {
+    margin-left: 20px;
+    line-height: 26px;
+  }
+
+  .shopcar td img {
+    width: 80px;
+  }
+
+  .numbtn .btn,
+  .numbtn .numshow {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    line-height: 24px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .numbtn .numshow {
+    width: 44px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd
+  }
+
+  .numbtn .btn{
+    border:1px solid #ddd;
+    cursor: pointer;
+  }
+
+  td.delshop,
+  td.settlement {
+    padding: 0;
+    line-height: 44px;
+  }
+
+  .numbtn {
+    font-size: 0px;
+  }
+
+  td.delshop {
+    text-align: left;
+  }
+
+  td.settlement {
+    text-align: right;
+  }
+
+  td.settlement .gobuy {
+    background: #a40011;
+    color: #fff;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    margin-left: 20px;
+  }
+</style>
